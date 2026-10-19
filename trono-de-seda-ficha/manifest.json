@@ -1,0 +1,15 @@
+{
+  "name": "Ficha - O Trono de Seda",
+  "version": "1.0.0",
+  "manifest_version": 1,
+  "description": "Ficha rápida de Ordem Paranormal (Japão feudal): vitais, fome e sede, inventário em cartas, adrenalina e rituais.",
+  "author": "Luca",
+  "icon": "/icon.svg",
+  "action": {
+    "title": "Ficha - Trono de Seda",
+    "icon": "/icon.svg",
+    "popover": "/index.html",
+    "width": 460,
+    "height": 760
+  }
+}

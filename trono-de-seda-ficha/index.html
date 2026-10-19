@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Ficha - O Trono de Seda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{
+  --bg:#14100d; --s1:#1d1712; --s2:#2a2018; --track:#2b2118; --line:#3d3022;
+  --text:#efe4cb; --muted:#a69878; --gold:#c9a24a; --gold2:#e8cb84; --on-gold:#1a130b;
+  --pv:#cc4631; --pe:#d9a83c; --san:#5f80cc; --def:#8a9a9c;
+  --fome:#dc8f45; --sede:#62aedb; --good:#5eaa80; --warn:#d9a83c; --bad:#e0624a;
+  --serif:'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho',Georgia,serif;
+  --sans:'Zen Kaku Gothic New','Hiragino Kaku Gothic ProN','Yu Gothic',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+:root[data-theme=light]{
+  --bg:#f0e8d3; --s1:#f8f2e2; --s2:#e9dfc4; --track:#9c8f72; --line:#cbbb94;
+  --text:#2b2219; --muted:#76684b; --gold:#8c6a1c; --gold2:#6f5314; --on-gold:#fff8e6;
+  --pv:#b53a27; --pe:#a97a12; --san:#3f61ad; --def:#66787a;
+  --fome:#b8691f; --sede:#2f86b8; --good:#2f7d56; --warn:#a97a12; --bad:#b53a27;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--text)}
+body{font:14px/1.45 var(--sans);-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+svg{display:block}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+
+/* cabeçalho */
+.top{position:sticky;top:0;z-index:5;display:flex;gap:10px;align-items:flex-start;padding:12px 14px 10px;background:var(--bg);border-bottom:1px solid var(--gold)}
+.id{flex:1;min-width:0}
+.nome{display:block;width:100%;padding:2px 0;border:0;border-bottom:1px dashed transparent;background:transparent;font:800 22px/1.15 var(--serif)}
+.orig{display:block;width:100%;padding:2px 0;border:0;border-bottom:1px dashed transparent;background:transparent;font-size:13px;color:var(--muted)}
+.nome:hover,.nome:focus,.orig:hover,.orig:focus{border-bottom-color:var(--line)}
+.tools{display:flex;align-items:center;gap:8px;padding-top:4px}
+.st{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}
+.st i{width:8px;height:8px;border-radius:50%;background:var(--good)}
+.st[data-s=saving] i{background:var(--warn)}
+.st[data-s=error] i{background:var(--bad)}
+.st[data-s=local] i{background:var(--muted)}
+.x{width:34px;height:34px;border:1px solid var(--line);border-radius:6px;background:var(--s1);font-size:20px;line-height:1;padding:0}
+.bn{padding:6px 14px;background:var(--gold);color:var(--on-gold);font-weight:700;font-size:13px}
+
+/* seções */
+main{padding:0 14px 48px}
+section{padding:16px 0 10px;border-bottom:1px solid var(--line)}
+section:last-child{border-bottom:0}
+h2{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 12px;font:800 18px/1.2 var(--serif);color:var(--gold2)}
+h3{margin:14px 0 6px;font:700 14px var(--serif)}
+.hint{margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+.empty{margin:6px 0;color:var(--muted)}
+.cnt{display:flex;align-items:center;gap:8px;font:500 13px var(--sans);color:var(--muted)}
+.btn{border:1px solid var(--line);border-radius:6px;background:var(--s1);padding:6px 12px;font-size:13px;font-weight:500}
+.btn:hover{border-color:var(--gold)}
+.btn.danger{color:var(--bad)}
+.btn[data-armed]{background:var(--bad);border-color:var(--bad);color:#fff}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+.chip{flex:none;border:1px solid var(--line);border-radius:999px;background:var(--s1);padding:4px 12px;font-size:13px}
+.chip.sm{padding:2px 10px;font-size:12px}
+.chip[aria-pressed=true]{background:var(--gold);border-color:var(--gold);color:var(--on-gold);font-weight:700}
+.passo{display:flex;align-items:center;gap:5px;font:500 12px var(--sans);color:var(--muted)}
+
+/* vitais */
+.vit{display:grid;grid-template-columns:58px 1fr 76px;gap:8px;align-items:center;margin-bottom:10px}
+.vit .lb{display:block;font:800 16px/1.1 var(--serif)}
+.vit .pct{display:block;font-size:11.5px;color:var(--muted)}
+.bar{position:relative;height:30px;border-radius:5px;background:var(--track);border:1px solid var(--line);overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--c);transition:width .2s}
+.bar .tk{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.4)}
+.nums{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:2px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.75)}
+.nums input{width:4.2ch;padding:2px 0;border:0;border-radius:3px;background:transparent;text-align:center;font-weight:700;color:#fff;text-shadow:inherit}
+.nums input:focus{background:rgba(0,0,0,.5)}
+.step{display:flex;gap:4px}
+.step button{flex:1;height:30px;border:1px solid var(--line);border-radius:5px;background:var(--s1);font-size:18px;font-weight:700;line-height:1;padding:0}
+.step button:active{background:var(--s2)}
+
+/* fome e sede */
+.need{margin-bottom:12px}
+.need .row{display:flex;align-items:center;gap:8px}
+.need .lb{width:50px;font:800 15px var(--serif)}
+.icons{display:flex;gap:2px}
+.ic{width:36px;height:36px;padding:4px;border:0;background:transparent;color:var(--c);opacity:.28}
+.ic[aria-pressed=true]{opacity:1}
+.ic svg{width:100%;height:100%}
+.val{margin-left:auto;font-weight:700;color:var(--muted)}
+.stage{margin:2px 0 0 58px;font-size:12.5px;color:var(--muted)}
+.stage b{color:var(--sc,var(--text))}
+.stage[data-s=ok]{--sc:var(--good)} .stage[data-s=warn]{--sc:var(--warn)}
+.stage[data-s=bad],.stage[data-s=crit]{--sc:var(--bad)}
+
+/* inventário em cartas */
+.meter{display:flex;gap:3px}
+.meter i{width:14px;height:6px;border-radius:2px;background:var(--track)}
+.meter i.on{background:var(--gold)}
+.inv{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.slot{position:relative;aspect-ratio:5/6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;overflow:hidden;border:1.5px dashed var(--line);border-radius:7px;background:var(--s1)}
+.slot .kj{font:800 36px/1 var(--serif);color:var(--line)}
+.slot .tg{font-size:12px;color:var(--muted)}
+.slot:hover{border-color:var(--gold)}
+.slot.full{border:1.5px solid var(--gold);background:#0000004d}
+.slot.full img{display:block;width:100%;height:100%;object-fit:contain}
+.slot .tag{position:absolute;left:0;right:0;bottom:0;padding:10px 6px 3px;text-align:left;font-size:11px;color:#fff;background:linear-gradient(transparent,#000000cc)}
+
+/* adrenalina */
+.pa{display:grid;gap:6px}
+.pa .row{display:flex;align-items:center;gap:6px}
+.pa .tr{width:22px;height:22px;margin-right:4px;color:var(--muted)}
+.pip{width:40px;height:40px;padding:7px;border:1px solid var(--line);border-radius:7px;background:var(--s1);color:var(--gold)}
+.pip svg{width:100%;height:100%;opacity:.22}
+.pip[aria-pressed=true] svg{opacity:1}
+.ch{padding:8px 0;border-top:1px solid var(--line)}
+.ch .hd{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ch .pcw{width:62px}
+.ch .pc{display:block;font:800 16px/1.1 var(--serif)}
+.ch.hit .pc{color:var(--bad)}
+.hitlb{display:none;font-size:11.5px;color:var(--bad)}
+.ch.hit .hitlb{display:block}
+.seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{border:0;background:var(--s1);padding:6px 7px;font-size:12px}
+.seg button[aria-pressed=true]{background:var(--gold);color:var(--on-gold);font-weight:700}
+.seg button[data-v="1"][aria-pressed=true]{background:var(--good);color:#fff}
+.seg button[data-v="2"][aria-pressed=true]{background:var(--bad);color:#fff}
+.dado{margin-left:auto}
+.fx{margin:5px 0 0;font-size:12.5px;color:var(--muted)}
+.fx b{color:var(--text)}
+
+/* rituais */
+.rit{margin-bottom:8px;border:1px solid var(--line);border-radius:7px;background:var(--s1)}
+.rit>summary{display:flex;align-items:center;gap:8px;padding:10px 12px;list-style:none;cursor:pointer}
+.rit>summary::-webkit-details-marker{display:none}
+.rit[open]>summary{border-bottom:1px solid var(--line)}
+.dot{flex:none;width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 1px var(--line)}
+.rit .nm{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:700 15px var(--serif)}
+.tag2{flex:none;padding:1px 8px;border:1px solid var(--line);border-radius:999px;font-size:11.5px;color:var(--muted)}
+.bd{display:grid;gap:10px;padding:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.f{display:grid;gap:3px;font-size:12px;color:var(--muted)}
+.f input,.f select,.f textarea{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--text)}
+.f textarea{min-height:68px;resize:vertical}
+.ver{display:grid;gap:6px;padding-left:10px;border-left:3px solid var(--vc)}
+.ver.d{--vc:var(--san)} .ver.v{--vc:var(--pv)}
+.ver .vh{display:flex;align-items:center;justify-content:space-between;font:700 14px var(--serif)}
+.ver .vh label{display:flex;align-items:center;gap:6px;font:500 12px var(--sans);color:var(--muted)}
+.ver .vh input{width:5ch;padding:3px 6px;border:1px solid var(--line);border-radius:5px;background:var(--bg);text-align:center}
+.ver textarea{min-height:56px;padding:6px 8px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--text);resize:vertical}
+.costs{display:flex;gap:6px;flex-wrap:wrap}
+.costs span{padding:2px 10px;border:1px solid var(--line);border-radius:999px;font-size:12px}
+.costs .d{border-color:var(--san)} .costs .v{border-color:var(--pv)}
+
+/* janelas */
+dialog{width:100%;height:100%;max-width:none;max-height:none;margin:0;inset:0;padding:0;border:0;background:var(--bg);color:var(--text)}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+.dlg{display:flex;flex-direction:column;height:100%}
+.dlg>header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px solid var(--gold)}
+.dlg h3{margin:0;font:800 17px var(--serif);color:var(--gold2)}
+.dlg .body{flex:1;overflow:auto;padding:12px 14px}
+.dlg .acts{margin:0;padding:10px 14px;border-top:1px solid var(--line)}
+.filters{display:grid;gap:8px;padding:10px 14px 4px}
+.filters input[type=search]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--s1)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.pick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 8px}
+.cp{display:grid;gap:4px;padding:0;border:0;background:none;text-align:center;font-size:12px;line-height:1.2}
+.cp img{width:100%;aspect-ratio:5/6;object-fit:contain;border-radius:7px;background:var(--s1)}
+.cp:hover img{outline:2px solid var(--gold)}
+.cv{display:grid;place-items:center}
+.cv img{max-width:100%;max-height:100%;object-fit:contain}
+.lst{display:grid;gap:8px}
+.lst button{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:7px;background:var(--s1);text-align:left}
+.lst button:hover:not(:disabled){border-color:var(--gold)}
+.lst button:disabled{opacity:.5;cursor:default}
+.lst .nm{flex:1;font:700 15px var(--serif)}
+#bk{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--s1);font:12px/1.4 ui-monospace,Menlo,Consolas,monospace}
+#toast{position:fixed;inset:auto 12px 12px 12px;width:auto;height:auto;margin:0;z-index:50;padding:10px 12px;border:1px solid var(--gold);border-radius:7px;background:var(--s2);color:var(--text);opacity:0;pointer-events:none;transition:opacity .2s;overflow:visible}
+#toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-fish" viewBox="0 0 24 24"><path fill="currentColor" d="M2.500 12c3.200-5.200 8.600-6.200 12.500-3L19.500 5.500v13L15 15c-3.900 3.200-9.300 2.200-12.500-3z"/><circle cx="8" cy="11" r="1.200" fill="var(--bg)"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.500C9 7 6 10.200 6 14.500a6 6 0 0 0 12 0c0-4.300-3-7.500-6-12z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path fill="currentColor" d="M12 20.800C6 16.500 3 13.300 3 9.600 3 7 5 5 7.500 5c1.800 0 3.300 1 4.500 2.800C13.200 6 14.700 5 16.500 5 19 5 21 7 21 9.600c0 3.700-3 6.900-9 11.200z"/></symbol>
+  <symbol id="i-poly" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.500l8.500 5v9L12 21.500l-8.500-5v-9z"/><path d="M12 7.500l4.600 8H7.400z" fill="none" stroke="var(--s1)" stroke-width="1.500" stroke-linejoin="round"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24"><path fill="currentColor" d="M9.500 4A3 3 0 0 0 6.500 7a3.200 3.200 0 0 0-2.200 4.600A3.600 3.600 0 0 0 6.600 17 3 3 0 0 0 9.500 20.500h1V4zM14.500 4a3 3 0 0 1 3 3 3.200 3.200 0 0 1 2.200 4.600A3.600 3.600 0 0 1 17.400 17a3 3 0 0 1-2.900 3.500h-1V4z"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="id">
+    <input class="nome" data-top="nome" maxlength="40" placeholder="Nome do personagem" aria-label="Nome do personagem">
+    <input class="orig" data-top="origem" maxlength="70" placeholder="Origem, trilha e NEX" aria-label="Origem, trilha e NEX">
+  </div>
+  <div class="tools">
+    <span class="st" id="st" role="status" data-s="saved"><i></i><span>Pronta</span></span>
+    <button class="x" data-act="menu" aria-label="Opções da ficha">&#8943;</button>
+  </div>
+</header>
+<div class="bn" id="bn" hidden></div>
+
+<main>
+  <section id="sec-vit"></section>
+  <section id="sec-need"></section>
+  <section id="sec-inv"></section>
+  <section id="sec-adr"></section>
+  <section id="sec-rit"></section>
+</main>
+
+<!-- escolher carta -->
+<dialog id="dlgPick" aria-label="Escolher carta">
+  <div class="dlg">
+    <header><h3 id="pkTitle">Escolher carta</h3><button class="x" data-act="close" data-d="dlgPick" aria-label="Fechar">&times;</button></header>
+    <div class="filters">
+      <input id="pkQ" type="search" placeholder="Buscar carta pelo nome" aria-label="Buscar carta pelo nome" autocomplete="off">
+      <div class="chips" id="pkTabs"></div>
+      <div class="chips" id="pkRar"></div>
+    </div>
+    <div class="body"><div class="pick" id="pkGrid"></div></div>
+  </div>
+</dialog>
+
+<!-- ver carta -->
+<dialog id="dlgCard" aria-label="Carta do inventário">
+  <div class="dlg">
+    <header><h3 id="cvTitle"></h3><button class="x" data-act="close" data-d="dlgCard" aria-label="Fechar">&times;</button></header>
+    <div class="body cv"><img id="cvImg" alt=""></div>
+    <div class="acts"><button class="btn" data-act="trocar">Trocar carta</button><button class="btn danger" data-act="remover">Remover do inventário</button></div>
+  </div>
+</dialog>
+
+<!-- rituais do suplemento -->
+<dialog id="dlgRit" aria-label="Rituais do suplemento">
+  <div class="dlg">
+    <header><h3>Rituais do suplemento</h3><button class="x" data-act="close" data-d="dlgRit" aria-label="Fechar">&times;</button></header>
+    <div class="body"><div class="lst" id="ritList"></div></div>
+  </div>
+</dialog>
+
+<!-- opções -->
+<dialog id="dlgMenu" aria-label="Opções da ficha">
+  <div class="dlg">
+    <header><h3>Opções da ficha</h3><button class="x" data-act="close" data-d="dlgMenu" aria-label="Fechar">&times;</button></header>
+    <div class="body">
+      <div id="gmBox" hidden>
+        <label class="f">Ficha em exibição
+          <select id="selFicha"></select>
+        </label>
+        <p class="hint">Esta lista aparece só para o mestre.</p>
+      </div>
+      <h3>Cópia de segurança</h3>
+      <textarea id="bk" rows="6" spellcheck="false" aria-label="Dados da ficha em JSON"></textarea>
+      <div class="acts" style="margin-top:8px;padding:0;border:0"><button class="btn" data-act="bk-copy">Copiar</button><button class="btn" data-act="bk-load">Importar o texto acima</button></div>
+      <h3>Armazenamento</h3>
+      <p class="hint" id="sizeInfo"></p>
+      <h3>Limpar</h3>
+      <button class="btn danger" data-act="reset">Limpar esta ficha</button>
+    </div>
+  </div>
+</dialog>
+
+<datalist id="dl-exec"><option>Padrão</option><option>Movimento</option><option>Completa</option><option>Livre</option><option>Reação</option></datalist>
+<datalist id="dl-alc"><option>Pessoal</option><option>Toque</option><option>Curto</option><option>Médio</option><option>Longo</option><option>Extremo</option></datalist>
+<datalist id="dl-dur"><option>Instantâneo</option><option>Cena</option><option>Sustentada</option><option>Contínua</option></datalist>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script type="module">
+/* ============================================================
+   Ficha - O Trono de Seda (extensão para Owlbear Rodeo 2.0)
+   ============================================================ */
+const SDK_URL = 'https://cdn.jsdelivr.net/npm/@owlbear-rodeo/sdk@3.1.0/+esm';
+const NS = 'com.trono-de-seda.ficha';          // prefixo das chaves no metadata da sala
+const LS = id => 'trono-de-seda:' + id;         // cópia local (localStorage)
+
+/* ---------- catálogo das cartas (cartas/*.webp) ---------- */
+const CARTAS = [{"id":"corda","n":"Corda","r":"comum","c":"armaduras","t":"item"},{"id":"geta","n":"Geta","r":"comum","c":"armaduras","t":"armadura"},{"id":"hakama","n":"Hakama","r":"comum","c":"armaduras","t":"armadura"},{"id":"kasa","n":"Kasa","r":"comum","c":"armaduras","t":"armadura"},{"id":"kimono-simples","n":"Kimono Simples","r":"comum","c":"armaduras","t":"armadura"},{"id":"kiseru","n":"Kiseru","r":"comum","c":"armaduras","t":"item"},{"id":"lanterna-de-papel","n":"Lanterna de Papel","r":"comum","c":"armaduras","t":"item"},{"id":"pedra-de-amolar","n":"Pedra de Amolar","r":"comum","c":"armaduras","t":"item"},{"id":"waraji","n":"Waraji","r":"comum","c":"armaduras","t":"armadura"},{"id":"oleo","n":"Óleo","r":"comum","c":"armaduras","t":"item"},{"id":"cavalo","n":"Cavalo","r":"imperial","c":"armaduras","t":"item"},{"id":"domaru","n":"Domaru","r":"imperial","c":"armaduras","t":"armadura"},{"id":"oyoroi","n":"Oyoroi","r":"imperial","c":"armaduras","t":"armadura"},{"id":"ferramentas-de-ladrao","n":"Ferramentas de Ladrão","r":"raro","c":"armaduras","t":"kit"},{"id":"jingasa","n":"Jingasa","r":"raro","c":"armaduras","t":"armadura"},{"id":"kit-de-caligrafia","n":"Kit de Caligrafia","r":"raro","c":"armaduras","t":"kit"},{"id":"kimono-de-seda","n":"Kimono de Seda","r":"epico","c":"armaduras","t":"armadura"},{"id":"mengu","n":"Mengu","r":"epico","c":"armaduras","t":"item"},{"id":"ofuda-talisma","n":"Ofuda (Talismã)","r":"epico","c":"armaduras","t":"item"},{"id":"sela-e-arreios","n":"Sela e Arreios","r":"epico","c":"armaduras","t":"item"},{"id":"bastao-bo","n":"Bastão Bo","r":"comum","c":"armas","t":"arma"},{"id":"aljava-e-flechas","n":"Aljava e Flechas","r":"comum","c":"armas","t":"item"},{"id":"fukiya","n":"Fukiya","r":"comum","c":"armas","t":"arma"},{"id":"kunai-shuriken","n":"Kunai / Shuriken","r":"comum","c":"armas","t":"item"},{"id":"metsubushi","n":"Metsubushi","r":"comum","c":"armas","t":"item"},{"id":"chokuto","n":"Chokuto","r":"imperial","c":"armas","t":"arma"},{"id":"katana","n":"Katana","r":"imperial","c":"armas","t":"arma"},{"id":"nodachi","n":"Nodachi","r":"imperial","c":"armas","t":"arma"},{"id":"kama","n":"Kama","r":"raro","c":"armas","t":"arma"},{"id":"sai","n":"Sai","r":"raro","c":"armas","t":"arma"},{"id":"shuriken-estrela-de-ferro","n":"Shuriken Estrela de Ferro","r":"raro","c":"armas","t":"item"},{"id":"tanto","n":"Tantô","r":"raro","c":"armas","t":"arma"},{"id":"yari","n":"Yari","r":"raro","c":"armas","t":"arma"},{"id":"kanabo","n":"Kanabo","r":"epico","c":"armas","t":"arma"},{"id":"kusarigama","n":"Kusarigama","r":"epico","c":"armas","t":"arma"},{"id":"naginata","n":"Naginata","r":"epico","c":"armas","t":"arma"},{"id":"tetsubo","n":"Tetsubo","r":"epico","c":"armas","t":"arma"},{"id":"tonfa","n":"Tonfa","r":"epico","c":"armas","t":"arma"},{"id":"wakizashi","n":"Wakizashi","r":"epico","c":"armas","t":"arma"},{"id":"yumi","n":"Yumi","r":"epico","c":"armas","t":"arma"},{"id":"arroz-tigela","n":"Arroz (Tigela)","r":"comum","c":"consumiveis","t":"item"},{"id":"biscoito-de-arroz-senbei","n":"Biscoito de Arroz (Senbei)","r":"comum","c":"consumiveis","t":"item"},{"id":"cha-verde","n":"Chá Verde","r":"comum","c":"consumiveis","t":"item"},{"id":"ervas-curativas","n":"Ervas Curativas","r":"comum","c":"consumiveis","t":"item"},{"id":"estrepes-makibishi","n":"Estrepes (Makibishi)","r":"comum","c":"consumiveis","t":"item"},{"id":"racao-de-viagem","n":"Ração de Viagem","r":"comum","c":"consumiveis","t":"item"},{"id":"saque","n":"Saquê","r":"comum","c":"consumiveis","t":"item"},{"id":"sal-de-purificacao","n":"Sal de Purificação","r":"comum","c":"consumiveis","t":"item"},{"id":"tocha-de-cera-e-bambu","n":"Tocha de Cera e Bambu","r":"comum","c":"consumiveis","t":"item"},{"id":"vinho-de-ameixa","n":"Vinho de Ameixa","r":"comum","c":"consumiveis","t":"item"},{"id":"agua-de-nascente","n":"Água de Nascente","r":"comum","c":"consumiveis","t":"item"},{"id":"elixir-da-flor-de-lotus","n":"Elixir da Flor de Lótus","r":"imperial","c":"consumiveis","t":"item"},{"id":"base-de-antidoto","n":"Base de Antídoto","r":"raro","c":"consumiveis","t":"item"},{"id":"granada-de-fumaca","n":"Granada de Fumaça","r":"raro","c":"consumiveis","t":"item"},{"id":"incenso-de-meditacao","n":"Incenso de Meditação","r":"raro","c":"consumiveis","t":"item"},{"id":"kit-apotecario","n":"Kit Apotecário","r":"raro","c":"consumiveis","t":"kit"},{"id":"polvora-porcao","n":"Pólvora (Porção)","r":"epico","c":"consumiveis","t":"item"},{"id":"selo-de-protecao","n":"Selo de Proteção","r":"epico","c":"consumiveis","t":"item"},{"id":"tonico-do-intelecto","n":"Tônico do Intelecto","r":"epico","c":"consumiveis","t":"item"},{"id":"veneno-do-outro-lado","n":"Veneno do Outro Lado","r":"epico","c":"consumiveis","t":"item"},{"id":"guarda-chuva","n":"Guarda-Chuva","r":"extra","c":"extra","t":"item"},{"id":"soco-ingles-primordial","n":"Soco Inglês Primordial","r":"extra","c":"extra","t":"arma"},{"id":"chapeu-laminado","n":"Chapéu Laminado","r":"extra","c":"extra","t":"arma"},{"id":"afrodisiaco-de-cacau","n":"Afrodisíaco de Cacau","r":"extra","c":"extra","t":"item"},{"id":"amarras-de-ar","n":"Amarras de Ar","r":"extra","c":"extra","t":"arma"},{"id":"amarras-de-fogo-lava","n":"Amarras de Fogo/Lava","r":"extra","c":"extra","t":"arma"},{"id":"amarras-de-terra-planta","n":"Amarras de Terra/Planta","r":"extra","c":"extra","t":"arma"},{"id":"amarras-de-agua-gelo","n":"Amarras de Água/Gelo","r":"extra","c":"extra","t":"arma"},{"id":"armadura-de-couro","n":"Armadura de Couro","r":"extra","c":"extra","t":"armadura"},{"id":"armadura-de-pano","n":"Armadura de Pano","r":"extra","c":"extra","t":"armadura"},{"id":"escritas-sagradas","n":"Escritas Sagradas","r":"extra","c":"extra","t":"item"},{"id":"espada-ocidental","n":"Espada Ocidental","r":"extra","c":"extra","t":"arma"},{"id":"estojo-de-ervas","n":"Estojo de Ervas","r":"extra","c":"extra","t":"kit"},{"id":"kit-de-boticario","n":"Kit de Boticário","r":"extra","c":"extra","t":"kit"},{"id":"kit-de-veneno","n":"Kit de Veneno","r":"extra","c":"extra","t":"kit"},{"id":"leque-laminado","n":"Leque Laminado","r":"extra","c":"extra","t":"arma"},{"id":"nunchaku","n":"Nunchaku","r":"extra","c":"extra","t":"arma"},{"id":"sutras-budistas","n":"Sutras Budistas","r":"extra","c":"extra","t":"item"}];
+const CAT_LABEL = { armas:'Armas', armaduras:'Armaduras e Montarias', consumiveis:'Consumíveis', extra:'Extra' };
+const RAR_LABEL = { comum:'Comum', raro:'Raro', epico:'Épico', imperial:'Imperial', extra:'Extra' };
+const RAR_ORD = { comum:0, raro:1, epico:2, imperial:3, extra:4 };
+const byId = new Map(CARTAS.map(c => [c.id, c]));
+const img = c => new URL('cartas/' + c.id + '.webp', location.href).href;
+
+const SLOTS = [
+  { lbl:'Arma',       kj:'刀', sug:'arma' },
+  { lbl:'Armadura',   kj:'鎧', sug:'armadura' },
+  { lbl:'Kit / Bolsa',kj:'包', sug:'kit' },
+  { lbl:'Livre',      kj:'竹' }, { lbl:'Livre', kj:'竹' }, { lbl:'Livre', kj:'竹' },
+];
+
+/* ---------- regras (PDF "O Palácio Interno") ---------- */
+const VIT = [
+  ['pv',  'P.V',   '--pv',  'Pontos de vida'],
+  ['pe',  'P.E',   '--pe',  'Pontos de esforço'],
+  ['san', 'SAN',   '--san', 'Sanidade'],
+  ['def', 'Defesa','--def', 'Defesa'],
+];
+const FOME = [
+  { n:'Inanição',      s:'crit', t:'Inconsciente. Perde 1d8+8 P.V por hora (Resistência a dano não se aplica) até se alimentar ou morrer. Todos os testes falham.' },
+  { n:'Faminto',       s:'bad',  t:'Condição Debilitado. Antes de qualquer teste, role 1d100: abaixo de 60, você falha.' },
+  { n:'Fome severa',   s:'bad',  t:'Condição Fraco: você perde todos os bônus (testes e dano).' },
+  { n:'Fome moderada', s:'warn', t:'−50% dos dados em todos os testes baseados em Força, Agilidade e Fortitude.' },
+  { n:'Satisfeito',    s:'ok',   t:'Bem alimentado e com energia total. Nenhuma penalidade.' },
+  { n:'Satisfeito',    s:'ok',   t:'Bem alimentado e com energia total. Nenhuma penalidade.' },
+];
+const SEDE = [
+  { n:'Colapso',       s:'crit', t:'Inconsciente. Sofre 2d6+5 de dano por hora (Resistência não se aplica) até a morte.' },
+  { n:'Desidratação',  s:'bad',  t:'A condição agrava: deslocamento cortado para um terço e −20 em todos os testes.' },
+  { n:'Sede moderada', s:'warn', t:'Condição Fadigado: −10 em testes físicos e não pode realizar investidas.' },
+  { n:'Hidratado',     s:'ok',   t:'O corpo opera na temperatura ideal. Sem penalidades.' },
+  { n:'Hidratado',     s:'ok',   t:'O corpo opera na temperatura ideal. Sem penalidades.' },
+  { n:'Hidratado',     s:'ok',   t:'O corpo opera na temperatura ideal. Sem penalidades.' },
+];
+const BAR = [70, 40, 10];
+const EFX = {
+  A: [
+    { n:'Foco',            t:'A dor aguça seus sentidos. Você recebe +1d em rolagens de ataque e rolagens de dano.' },
+    { n:'Matar ou Morrer', t:'O sangue ferve. Você recebe +5 na sua Defesa e ganha +1 Ação de Movimento adicional no seu turno.' },
+    { n:'Sobrecarga',      t:'Você ignora o estado Inconsciente caso chegue a 0 P.V e ganha +1 Ação Padrão extra, lutando até que seu corpo se quebre de vez.' },
+  ],
+  I: [
+    { n:'Dor Latente',     t:'Você fica abalado enquanto tenta lidar com a dor do ferimento inicial. Recebe −5 em todos os testes.' },
+    { n:'Pane no Sistema', t:'O sangue esvaindo afeta seus sentidos. Você fica lento, perdendo sua Ação de Movimento no turno e cortando seu deslocamento em 2/3 até o fim da cena.' },
+    { n:'Descontrole',     t:'Você fica Pasmo por uma rodada e, após isso, falha em todos os testes automaticamente até que saia dos 10% de vida.' },
+  ],
+};
+const ELEMS = ['Sangue','Morte','Conhecimento','Energia','Medo'];
+const ELEM_COR = { Sangue:'#e0483a', Morte:'#e8e4e0', Conhecimento:'#f0a84a', Energia:'#6fdc5a', Medo:'#b9b9c9' };
+const CUSTO = { 1:1, 2:3, 3:6, 4:10 };   // custo-base padrão por círculo (editável em cada ritual)
+
+/* ---------- rituais do suplemento (PDF "O Palácio Interno") ---------- */
+const PRESETS = {
+  'loop-reverso': { nome:'Loop Reverso', elem:'Morte', circ:1, custo:1, exec:'Livre', alc:'Médio', alvo:'Item', dur:'Instantâneo',
+    desc:'Após marcar o símbolo do ritual previamente (3 P.E) em um objeto pequeno de arremesso (Chapéu, Leque, Kunai, Shuriken) você consegue arremessá-lo com um efeito “bumerangue”, fazendo-o voltar por 1 P.E, como ação livre. Esse ritual só pode ser executado uma vez por rodada.',
+    dis:{ c:0, t:'' },
+    ver:{ c:4, t:'Você consegue aplicar esse ritual em qualquer arma. Requer 3° círculo e afinidade.' } },
+  'espiral-yokai': { nome:'Espiral Yokai', elem:'Morte', circ:2, custo:3, exec:'Padrão', alc:'Curto', alvo:'1 Ser', dur:'Cena',
+    desc:'Lodo temporal espesso emerge do solo em mãos esqueléticas e espíritos furiosos que agarram o alvo, deixando-o preso por 1 rodada (ele não pode agir enquanto estiver preso, Reflexos anula).',
+    dis:{ c:0, t:'' },
+    ver:{ c:6, t:'Requer 3° círculo e afinidade. O alvo fica Paralisado em vez de apenas enredado.' } },
+  'passo-do-dragao': { nome:'Passo do Dragão', elem:'Energia', circ:1, custo:1, exec:'Movimento', alc:'Curto', alvo:'Você', dur:'Instantâneo',
+    desc:'Seu corpo se converte em eletricidade estática. Você desaparece e reaparece em qualquer lugar desocupado dentro do seu alcance curto deixando um rastro rápido de faíscas coloridas.',
+    dis:{ c:0, t:'' },
+    ver:{ c:6, t:'O alcance triplica, e ao teleportar, você envolve o seu corpo em uma camada enérgica, ganhando +20 no seu próximo teste. Requer 3° Círculo e Afinidade.' } },
+  'lanternas-do-caos': { nome:'Lanternas do Caos', elem:'Energia', circ:2, custo:3, exec:'Padrão', alc:'Médio', alvo:'Esfera de 6m', dur:'Cena',
+    desc:'Você invoca três lanternas de papel espectrais que flutuam erraticamente em 1q. Qualquer inimigo que inicie o turno dentro da área da esfera sofre 2d6+5 de dano de Energia.',
+    dis:{ c:3, t:'O dano aumenta para 4d6+5.' },
+    ver:{ c:6, t:'O dano aumenta para 6d6+5, e além disso, você recebe 3d6+5 em cura toda vez que um inimigo é atingido por esse ritual. Requer 3° Círculo.' } },
+  'selo-revelador': { nome:'Selo Revelador', elem:'Conhecimento', circ:1, custo:1, exec:'Padrão', alc:'Toque', alvo:'1 Objeto ou Ser', dur:'Cena',
+    desc:'Você cola um selo translúcido de conhecimento puro no alvo. Você sabe a direção exata, distância do alvo além dos P.V e P.E atuais do alvo enquanto o selo permanecer colado.',
+    dis:{ c:2, t:'Você consegue ver e ouvir através da perspectiva do selo, como se seus sentidos fossem absolutos.' },
+    ver:{ c:0, t:'' } },
+  'fio-de-seda-do-destino': { nome:'Fio de Seda do Destino', elem:'Conhecimento', circ:2, custo:3, exec:'Padrão', alc:'Curto', alvo:'2 Seres', dur:'Sustentada',
+    desc:'Conecta dois alvos através de amarras caligráficas invisíveis. Todo dano ou cura que um dos alvos recebe, o outro recebe metade do valor (arredondado para baixo), porém, cada um ganha RD 5 no processo.',
+    dis:{ c:0, t:'' },
+    ver:{ c:5, t:'O dano é sempre cortado pela metade e a cura é sempre dobrada enquanto o ritual estiver sustentado. Requer 3° círculo e afinidade.' } },
+  'lamina-carmesim': { nome:'Lâmina Carmesim', elem:'Sangue', circ:1, custo:1, exec:'Movimento', alc:'Toque', alvo:'1 Arma corpo a corpo', dur:'Cena',
+    desc:'Você banha sua lâmina com seu próprio sangue, sacrificando o físico pela força de sua arma, o sangue banhado se cristaliza, fortalecendo a lâmina e criando veias pulsantes em volta de toda a arma. A arma recebe 1d6+4 de dano de Sangue adicional.',
+    dis:{ c:3, t:'O bônus de dano muda para +2d6+6.' },
+    ver:{ c:0, t:'' } },
+  'mascara-oni': { nome:'Máscara Oni', elem:'Sangue', circ:2, custo:3, exec:'Padrão', alc:'Pessoal', alvo:'Você', dur:'Sustentada',
+    desc:'O sangue flui dos orifícios do seu rosto e molda uma máscara demoníaca enrijecida. Você recebe +10 em testes de ataque corpo a corpo e +10 em Intimidação, além de diminuir a sua margem de crítico em 3. Se tornando um ser brutal, porém, ao final da duração do ritual, você perde 1d6+2 SAN permanentes, sacrificando a sua mente pela força física.',
+    dis:{ c:0, t:'' },
+    ver:{ c:10, t:'Requer 4° círculo e afinidade. A máscara endurece como aço e se torna um objeto físico que não consome mais a sua mente.' } },
+};
+
+/* ---------- utilidades ---------- */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+const int = v => { const n = parseInt(v, 10); return Number.isFinite(n) ? n : 0; };
+const str = v => (v == null ? '' : String(v));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const clone = o => JSON.parse(JSON.stringify(o));
+const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const bytes = o => new TextEncoder().encode(JSON.stringify(o)).length;
+
+/* ---------- modelo da ficha ---------- */
+const blank = (nome = '') => ({
+  nome, origem: '',
+  pv: { a:0, m:0 }, pe: { a:0, m:0 }, san: { a:0, m:0 }, def: { a:0, m:0 },
+  fome: 5, sede: 5,
+  inv: ['', '', '', '', '', ''],
+  pa: [0, 0, 0],
+  choque: { c:[0, 0, 0], r:[0, 0, 0] },
+  rituais: [],
+});
+
+function normRitual(r) {
+  return {
+    id: r.id || uid(), pid: r.pid || '',
+    nome: str(r.nome), elem: str(r.elem), circ: clamp(int(r.circ) || 1, 1, 4), custo: Math.max(0, int(r.custo)),
+    exec: str(r.exec), alc: str(r.alc), alvo: str(r.alvo), dur: str(r.dur), desc: str(r.desc),
+    dis: { c: Math.max(0, int(r.dis?.c)), t: str(r.dis?.t) },
+    ver: { c: Math.max(0, int(r.ver?.c)), t: str(r.ver?.t) },
+  };
+}
+const expandRitual = r => normRitual(PRESETS[r.pid] ? { ...clone(PRESETS[r.pid]), ...r } : r);
+
+function normalize(d) {
+  d = d || {};
+  const s = blank(str(d.nome).slice(0, 40));
+  s.origem = str(d.origem).slice(0, 70);
+  for (const k of ['pv', 'pe', 'san', 'def']) s[k] = { a: Math.max(0, int(d[k]?.a)), m: Math.max(0, int(d[k]?.m)) };
+  s.fome = clamp(d.fome == null ? 5 : int(d.fome), 0, 5);
+  s.sede = clamp(d.sede == null ? 5 : int(d.sede), 0, 5);
+  s.inv = Array.from({ length: 6 }, (_, i) => (byId.has(d.inv?.[i]) ? d.inv[i] : ''));
+  s.pa = [0, 1, 2].map(i => clamp(int(d.pa?.[i]), 0, 3));
+  s.choque = {
+    c: [0, 1, 2].map(i => clamp(int(d.choque?.c?.[i]), 0, 2)),
+    r: [0, 1, 2].map(i => clamp(int(d.choque?.r?.[i]), 0, 100)),
+  };
+  s.rituais = (Array.isArray(d.rituais) ? d.rituais : []).slice(0, 40).map(expandRitual);
+  return s;
+}
+
+/* compacta para caber no limite de 16 kB do metadata da sala */
+function strip(o) {
+  if (Array.isArray(o)) return o.map(strip);
+  if (o && typeof o === 'object') {
+    const r = {};
+    for (const [k, v] of Object.entries(o)) {
+      const x = strip(v);
+      if (x === '' || x == null || (typeof x === 'object' && !Array.isArray(x) && !Object.keys(x).length)) continue;
+      r[k] = x;
+    }
+    return r;
+  }
+  return o;
+}
+function packRitual(r) {
+  const base = PRESETS[r.pid];
+  if (!base) { const o = { ...r }; delete o.pid; return strip(o); }
+  const o = { id: r.id, pid: r.pid };           // ritual do suplemento: grava só o que foi alterado
+  for (const k of Object.keys(base)) if (JSON.stringify(r[k]) !== JSON.stringify(base[k])) o[k] = r[k];
+  return o;
+}
+const pack = s => ({ ...strip({ ...s, rituais: [] }), rituais: s.rituais.map(packRitual) });
+
+/* ---------- estado ---------- */
+let OBR = null;
+const ctx = { pid: 'local', pname: '', role: 'GM', local: true, ready: false };
+let view = { pid: 'local' };       // ficha em exibição (o mestre pode abrir a de outros)
+let S = blank();
+let sheets = {};                   // pid -> { n, p, t, d }
+let lastSent = '';
+let saveTimer = 0;
+let pendingRemote = null;
+let lastMd = {};
+const openRit = new Set();
+let passo = int(safeGet('trono-de-seda:passo')) || 1;
+let pk = { slot: 0, tab: 'todas', rar: '', q: '' };
+let cv = { i: 0 };
+
+function safeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
+function safeSet(k, v) { try { localStorage.setItem(k, v); } catch { /* storage bloqueado */ } }
+function readLocal(pid) { try { return JSON.parse(safeGet(LS(pid))); } catch { return null; } }
+
+/* ---------- persistência (metadata da sala) ---------- */
+const mkKey = pid => NS + '/' + pid;
+const collect = md => {
+  const o = {};
+  for (const [k, v] of Object.entries(md || {})) if (k.startsWith(NS + '/') && v && typeof v === 'object') o[k.slice(NS.length + 1)] = v;
+  return o;
+};
+
+function setStatus(s, txt) {
+  const el = $('#st'); el.dataset.s = s; $('span', el).textContent = txt;
+}
+function touch() {
+  if (!ctx.ready) return;
+  safeSet(LS(view.pid), JSON.stringify(pack(S)));
+  if (ctx.local) { setStatus('local', 'Só neste navegador'); return; }
+  setStatus('saving', 'Salvando…');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(flush, 500);
+}
+async function flush() {
+  clearTimeout(saveTimer); saveTimer = 0;
+  if (ctx.local || !OBR) return;
+  const d = pack(S);
+  const rec = { n: S.nome, p: sheets[view.pid]?.p || (view.pid === ctx.pid ? ctx.pname : ''), t: Date.now(), d };
+  lastSent = JSON.stringify(d);
+  try {
+    await OBR.room.setMetadata({ [mkKey(view.pid)]: rec });
+    sheets[view.pid] = rec;
+    setStatus('saved', 'Salva na sala');
+  } catch (e) {
+    console.error(e);
+    setStatus('error', 'Falha ao salvar na sala');
+    toast('Não consegui salvar na sala (limite de 16 kB ou sem permissão). A ficha continua guardada neste navegador.');
+  }
+}
+function updateSize() {
+  $('#sizeInfo').textContent = ctx.local
+    ? 'Fora do Owlbear Rodeo: a ficha fica salva só neste navegador.'
+    : `Metadata da sala: ${(bytes(lastMd) / 1024).toFixed(1)} kB de 16 kB. Esta ficha: ${(bytes(pack(S)) / 1024).toFixed(1)} kB.`;
+}
+
+function editingInside() {
+  const a = document.activeElement;
+  return !!a && a !== document.body && !!a.closest('main, .top');
+}
+function onRoomMeta(md) {
+  lastMd = md || {}; sheets = collect(md);
+  fillSelect(); updateSize();
+  const rec = sheets[view.pid];
+  if (!rec) return;
+  const incoming = JSON.stringify(rec.d);
+  if (incoming === lastSent || incoming === JSON.stringify(pack(S))) return;   // eco da própria gravação
+  if (saveTimer) return;                                                       // edição local pendente vence
+  if (editingInside()) { pendingRemote = rec; return; }
+  S = normalize(rec.d); renderAll(); setStatus('saved', 'Atualizada pela sala');
+}
+
+async function switchView(pid) {
+  if (saveTimer) await flush();
+  view = { pid };
+  const rec = sheets[pid];
+  S = rec ? normalize(rec.d) : (readLocal(pid) ? normalize(readLocal(pid)) : blank(pid === ctx.pid ? ctx.pname : ''));
+  openRit.clear(); renderAll(); fillSelect();
+}
+function fillSelect() {
+  const box = $('#gmBox');
+  box.hidden = !(OBR && !ctx.local && ctx.role === 'GM');
+  if (box.hidden) return;
+  const ids = new Set([ctx.pid, ...Object.keys(sheets)]);
+  $('#selFicha').innerHTML = [...ids].map(id => {
+    const r = sheets[id];
+    const nm = (r && (r.n || r.p)) || (id === ctx.pid ? ctx.pname : 'Sem nome');
+    return `<option value="${esc(id)}"${id === view.pid ? ' selected' : ''}>${id === ctx.pid ? 'Minha ficha: ' : ''}${esc(nm)}</option>`;
+  }).join('');
+}
+function renderBanner() {
+  const bn = $('#bn'), outro = view.pid !== ctx.pid;
+  bn.hidden = !outro;
+  if (outro) bn.textContent = 'Editando a ficha de ' + (sheets[view.pid]?.n || sheets[view.pid]?.p || 'outro jogador');
+}
+
+/* ---------- toast ---------- */
+let tt = 0;
+const hasPopover = typeof HTMLElement.prototype.showPopover === 'function';
+if (hasPopover) $('#toast').setAttribute('popover', 'manual');   // camada superior: aparece acima das janelas abertas
+function toast(m) {
+  const t = $('#toast'); t.textContent = m;
+  if (hasPopover && !t.matches(':popover-open')) { try { t.showPopover(); } catch { /* ignora */ } }
+  requestAnimationFrame(() => t.classList.add('on'));
+  clearTimeout(tt);
+  tt = setTimeout(() => {
+    t.classList.remove('on');
+    if (hasPopover) setTimeout(() => { try { t.hidePopover(); } catch { /* ignora */ } }, 220);
+  }, 3200);
+}
+
+/* ---------- vitais ---------- */
+function renderVit() {
+  $('#sec-vit').innerHTML = `
+    <h2>Vitais <span class="passo" role="group" aria-label="Passo dos botões de mais e menos">Passo
+      ${[1, 5, 10].map(n => `<button class="chip sm" data-act="passo" data-v="${n}" aria-pressed="${passo === n}">${n}</button>`).join('')}</span></h2>
+    ${VIT.map(([k, lb, col, full]) => `
+      <div class="vit" style="--c:var(${col})" data-k="${k}">
+        <div><span class="lb">${lb}</span>${k === 'pv' ? '<span class="pct"></span>' : ''}</div>
+        <div class="bar"><i></i>${k === 'pv' ? BAR.map(b => `<b class="tk" style="left:${b}%"></b>`).join('') : ''}
+          <div class="nums">
+            <input type="number" inputmode="numeric" min="0" data-bind="${k}.a" aria-label="${full}, valor atual">
+            <span aria-hidden="true">/</span>
+            <input type="number" inputmode="numeric" min="0" data-bind="${k}.m" aria-label="${full}, valor máximo">
+          </div></div>
+        <div class="step">
+          <button data-act="adj" data-k="${k}" data-d="-1" aria-label="Diminuir ${full}">−</button>
+          <button data-act="adj" data-k="${k}" data-d="1" aria-label="Aumentar ${full}">+</button>
+        </div>
+      </div>`).join('')}`;
+  refreshVit();
+}
+function refreshVit() {
+  for (const [k] of VIT) {
+    const row = $(`.vit[data-k="${k}"]`); if (!row) continue;
+    const { a, m } = S[k];
+    const [ai, mi] = $$('input', row);
+    if (document.activeElement !== ai) ai.value = a;
+    if (document.activeElement !== mi) mi.value = m;
+    $('.bar i', row).style.width = (m > 0 ? clamp(a / m * 100, 0, 100) : 0) + '%';
+  }
+  const p = $('.vit[data-k="pv"] .pct');
+  if (p) p.textContent = S.pv.m > 0 ? Math.round(S.pv.a / S.pv.m * 100) + '%' : '';
+  refreshHits();
+}
+
+/* ---------- fome e sede ---------- */
+function renderNeed() {
+  const row = (k, lb, icon, col, tbl) => `
+    <div class="need" style="--c:var(${col})">
+      <div class="row"><span class="lb">${lb}</span>
+        <div class="icons" role="group" aria-label="${lb}">
+          ${[1, 2, 3, 4, 5].map(i => `<button class="ic" data-act="need" data-k="${k}" data-v="${i}" aria-pressed="${S[k] >= i}" aria-label="${lb}: ${i} de 5"><svg><use href="#${icon}"/></svg></button>`).join('')}
+        </div>
+        <span class="val">${S[k]}/5</span></div>
+      <p class="stage" data-s="${tbl[S[k]].s}"><b>${tbl[S[k]].n}.</b> ${tbl[S[k]].t}</p>
+    </div>`;
+  $('#sec-need').innerHTML = `
+    <h2>Fome e Sede <button class="btn" data-act="horas">Passaram 2 h</button></h2>
+    ${row('fome', 'Fome', 'i-fish', '--fome', FOME)}
+    ${row('sede', 'Sede', 'i-drop', '--sede', SEDE)}`;
+}
+
+/* ---------- inventário ---------- */
+function renderInv() {
+  const n = S.inv.filter(Boolean).length;
+  $('#sec-inv').innerHTML = `
+    <h2>Inventário <span class="cnt" aria-label="${n} de 6 cartas">${n}/6
+      <span class="meter" aria-hidden="true">${S.inv.map(x => `<i class="${x ? 'on' : ''}"></i>`).join('')}</span></span></h2>
+    <div class="inv">
+      ${SLOTS.map((sl, i) => {
+        const c = byId.get(S.inv[i]);
+        return c
+          ? `<button class="slot full" data-act="slot" data-i="${i}" aria-label="${esc(c.n)}, espaço ${esc(sl.lbl)}. Abrir carta"><img src="${img(c)}" alt="Carta ${esc(c.n)}" decoding="async"><span class="tag">${sl.lbl}</span></button>`
+          : `<button class="slot" data-act="slot" data-i="${i}" aria-label="Espaço ${esc(sl.lbl)} vazio. Escolher carta"><span class="kj" aria-hidden="true">${sl.kj}</span><span class="tg">${sl.lbl}</span></button>`;
+      }).join('')}
+    </div>
+    <p class="hint">Arremessáveis não ocupam espaço. Sem kit, o espaço serve para qualquer item que não seja arma ou armadura principal.</p>`;
+}
+
+const pickList = () => {
+  const sl = SLOTS[pk.slot], q = norm(pk.q.trim());
+  return CARTAS.filter(c => {
+    if (pk.tab === 'sug') { if (!sl.sug || c.t !== sl.sug) return false; }
+    else if (pk.tab !== 'todas' && c.c !== pk.tab) return false;
+    if (pk.rar && c.r !== pk.rar) return false;
+    if (q && !norm(c.n).includes(q)) return false;
+    return true;
+  }).sort((a, b) => RAR_ORD[a.r] - RAR_ORD[b.r] || a.n.localeCompare(b.n, 'pt'));
+};
+function renderPick() {
+  const sl = SLOTS[pk.slot];
+  const tabs = [...(sl.sug ? [['sug', 'Sugeridas']] : []), ['todas', 'Todas'], ...Object.entries(CAT_LABEL)];
+  $('#pkTabs').innerHTML = tabs.map(([k, l]) => `<button class="chip" data-act="tab" data-v="${k}" aria-pressed="${pk.tab === k}">${l}</button>`).join('');
+  $('#pkRar').innerHTML = [['', 'Qualquer raridade'], ...Object.entries(RAR_LABEL)]
+    .map(([k, l]) => `<button class="chip sm" data-act="rar" data-v="${k}" aria-pressed="${pk.rar === k}">${l}</button>`).join('');
+  const list = pickList();
+  $('#pkGrid').innerHTML = list.length
+    ? list.map(c => `<button class="cp" data-act="pick" data-id="${c.id}"><img src="${img(c)}" alt="" loading="lazy" decoding="async"><span>${esc(c.n)}</span></button>`).join('')
+    : '<p class="empty">Nenhuma carta encontrada com esse filtro.</p>';
+  $('#pkTitle').textContent = 'Escolher carta: ' + sl.lbl;
+}
+function openPicker(i) {
+  pk = { slot: i, tab: SLOTS[i].sug ? 'sug' : 'todas', rar: '', q: '' };
+  $('#pkQ').value = ''; renderPick();
+  $('#dlgPick').showModal(); $('#dlgPick .body').scrollTop = 0;
+}
+function openViewer(i) {
+  const c = byId.get(S.inv[i]); if (!c) return;
+  cv = { i };
+  $('#cvTitle').textContent = c.n;
+  $('#cvImg').src = img(c); $('#cvImg').alt = 'Carta ' + c.n;
+  $('#dlgCard').showModal();
+}
+
+/* ---------- adrenalina ---------- */
+function renderAdr() {
+  const icons = ['i-heart', 'i-poly', 'i-brain'];
+  $('#sec-adr').innerHTML = `
+    <h2>Adrenalina <button class="btn" data-act="cena">Nova cena</button></h2>
+    <h3>Pontos de Adrenalina (P.A)</h3>
+    <div class="pa">
+      ${icons.map((ic, r) => `<div class="row"><svg class="tr" aria-hidden="true"><use href="#${ic}"/></svg>
+        ${[1, 2, 3].map(j => `<button class="pip" data-act="pa" data-r="${r}" data-v="${j}" aria-pressed="${S.pa[r] >= j}" aria-label="Linha ${r + 1}, ponto ${j}"><svg><use href="#${ic}"/></svg></button>`).join('')}
+        <span class="val">${S.pa[r]}/3</span></div>`).join('')}
+    </div>
+    <h3>Teste de Choque (d100)</h3>
+    <p class="hint" style="margin:0 0 6px">Ao chegar em 70%, 40% e 10% da vida máxima: 49 ou menos é Instabilidade, 51 ou mais é Adrenalina e 50 rola de novo. O resultado vale pelo resto da cena.</p>
+    ${BAR.map((b, i) => {
+      const c = S.choque.c[i], fx = c ? EFX[c === 1 ? 'A' : 'I'][i] : null, last = S.choque.r[i];
+      return `<div class="ch" data-i="${i}">
+        <div class="hd"><div class="pcw"><span class="pc">${b}%</span><span class="hitlb">atingida</span></div>
+          <div class="seg" role="group" aria-label="Resultado em ${b}%">
+            ${[[0, 'Pendente'], [1, 'Adrenalina'], [2, 'Instabilidade']].map(([v, l]) => `<button data-act="ch" data-i="${i}" data-v="${v}" aria-pressed="${c === v}">${l}</button>`).join('')}
+          </div>
+          <button class="btn dado" data-act="d100" data-i="${i}" aria-label="Rolar d100 para ${b}%">d100${last ? ` <b>${last}</b>` : ''}</button></div>
+        ${fx ? `<p class="fx"><b>${fx.n}.</b> ${fx.t}</p>` : ''}
+      </div>`;
+    }).join('')}`;
+  refreshHits();
+}
+function refreshHits() {
+  const pct = S.pv.m > 0 ? S.pv.a / S.pv.m * 100 : 101;
+  $$('.ch').forEach(el => el.classList.toggle('hit', pct <= BAR[+el.dataset.i]));
+}
+
+/* ---------- rituais ---------- */
+function ritCosts(r) {
+  const out = [`<span>Normal ${r.custo} P.E</span>`];
+  if (r.dis.c || r.dis.t) out.push(`<span class="d">Discente ${r.custo + r.dis.c} P.E</span>`);
+  if (r.ver.c || r.ver.t) out.push(`<span class="v">Verdadeiro ${r.custo + r.ver.c} P.E</span>`);
+  return out.join('');
+}
+function ritSummary(r) {
+  return `<span class="dot" style="background:${ELEM_COR[r.elem] || 'var(--muted)'}"></span>
+    <span class="nm">${esc(r.nome) || 'Novo ritual'}</span>
+    <span class="tag2">${r.circ}° círculo</span><span class="tag2">${r.custo} P.E</span>`;
+}
+function ritHtml(r) {
+  const f = (k, v) => `data-rit="${r.id}" data-f="${k}"${v !== undefined ? ` value="${esc(v)}"` : ''}`;
+  return `<details class="rit" data-id="${r.id}"${openRit.has(r.id) ? ' open' : ''}>
+    <summary>${ritSummary(r)}</summary>
+    <div class="bd">
+      <label class="f">Nome<input ${f('nome', r.nome)} maxlength="60" autocomplete="off"></label>
+      <div class="g3">
+        <label class="f">Elemento<select ${f('elem')}><option value="">Sem elemento</option>${ELEMS.map(e => `<option${e === r.elem ? ' selected' : ''}>${e}</option>`).join('')}</select></label>
+        <label class="f">Círculo<select ${f('circ')}>${[1, 2, 3, 4].map(n => `<option value="${n}"${n === r.circ ? ' selected' : ''}>${n}° círculo</option>`).join('')}</select></label>
+        <label class="f">Custo (P.E)<input type="number" inputmode="numeric" min="0" ${f('custo', r.custo)}></label>
+      </div>
+      <div class="g3">
+        <label class="f">Execução<input list="dl-exec" ${f('exec', r.exec)}></label>
+        <label class="f">Alcance<input list="dl-alc" ${f('alc', r.alc)}></label>
+        <label class="f">Duração<input list="dl-dur" ${f('dur', r.dur)}></label>
+      </div>
+      <label class="f">Alvo ou área<input ${f('alvo', r.alvo)} maxlength="80"></label>
+      <label class="f">Descrição<textarea ${f('desc')}>${esc(r.desc)}</textarea></label>
+      <div class="ver d">
+        <div class="vh"><span>Discente</span><label>Custo extra +<input type="number" inputmode="numeric" min="0" ${f('dis.c', r.dis.c)}> P.E</label></div>
+        <textarea ${f('dis.t')} placeholder="Efeito da versão discente">${esc(r.dis.t)}</textarea>
+      </div>
+      <div class="ver v">
+        <div class="vh"><span>Verdadeiro</span><label>Custo extra +<input type="number" inputmode="numeric" min="0" ${f('ver.c', r.ver.c)}> P.E</label></div>
+        <textarea ${f('ver.t')} placeholder="Efeito da versão verdadeira (requisitos incluídos)">${esc(r.ver.t)}</textarea>
+      </div>
+      <div class="costs" aria-label="Custo total de cada versão">${ritCosts(r)}</div>
+      <div><button class="btn danger" data-act="rit-del" data-id="${r.id}">Remover ritual</button></div>
+    </div>
+  </details>`;
+}
+function renderRit() {
+  $('#sec-rit').innerHTML = `
+    <h2>Rituais <span class="cnt">${S.rituais.length} aprendido${S.rituais.length === 1 ? '' : 's'}</span></h2>
+    <div class="acts"><button class="btn" data-act="rit-add">Novo ritual</button><button class="btn" data-act="rit-cat">Do suplemento</button></div>
+    ${S.rituais.length ? S.rituais.map(ritHtml).join('') : '<p class="empty">Nenhum ritual aprendido. Crie um novo ou escolha entre os rituais do suplemento.</p>'}`;
+}
+function refreshRit(r) {
+  const d = $(`details.rit[data-id="${r.id}"]`); if (!d) return;
+  $('summary', d).innerHTML = ritSummary(r);
+  $('.costs', d).innerHTML = ritCosts(r);
+}
+function setRitField(r, f, v) {
+  if (f === 'circ') {
+    const old = r.circ; r.circ = clamp(int(v) || 1, 1, 4);
+    if (r.custo === CUSTO[old]) {                    // custo ainda é o padrão do círculo antigo: acompanha
+      r.custo = CUSTO[r.circ];
+      const ci = $(`[data-rit="${r.id}"][data-f="custo"]`); if (ci) ci.value = r.custo;
+    }
+  } else if (f === 'custo' || f === 'dis.c' || f === 'ver.c') {
+    const n = Math.max(0, int(v));
+    if (f === 'custo') r.custo = n; else r[f.slice(0, 3)].c = n;
+  } else if (f === 'dis.t' || f === 'ver.t') {
+    r[f.slice(0, 3)].t = v;
+  } else r[f] = v;
+}
+function openRitCatalog() {
+  $('#ritList').innerHTML = Object.entries(PRESETS).map(([id, p]) => {
+    const has = S.rituais.some(r => r.pid === id);
+    return `<button data-act="rit-pick" data-id="${id}"${has ? ' disabled' : ''}>
+      <span class="dot" style="background:${ELEM_COR[p.elem]}"></span>
+      <span class="nm">${esc(p.nome)}</span>
+      <span class="tag2">${esc(p.elem)}</span><span class="tag2">${p.circ}° círculo</span>${has ? '<span class="tag2">já aprendido</span>' : ''}</button>`;
+  }).join('');
+  $('#dlgRit').showModal();
+}
+
+/* ---------- render geral ---------- */
+function renderAll() {
+  $('[data-top="nome"]').value = S.nome;
+  $('[data-top="origem"]').value = S.origem;
+  renderVit(); renderNeed(); renderInv(); renderAdr(); renderRit(); renderBanner();
+}
+
+/* ---------- eventos ---------- */
+function armed(btn, label, done) {                   // confirmação em dois toques (sem confirm())
+  if (btn.dataset.armed) { done(); return; }
+  btn.dataset.armed = '1'; const old = btn.textContent; btn.textContent = 'Toque de novo para confirmar';
+  setTimeout(() => { if (btn.isConnected) { delete btn.dataset.armed; btn.textContent = old; } }, 3000);
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if (!t) return;
+  const a = t.dataset.act;
+  switch (a) {
+    case 'passo': passo = int(t.dataset.v); safeSet('trono-de-seda:passo', passo); $$('[data-act="passo"]').forEach(b => b.setAttribute('aria-pressed', int(b.dataset.v) === passo)); break;
+    case 'adj': {
+      const v = S[t.dataset.k], d = int(t.dataset.d) * passo;
+      let n = Math.max(0, v.a + d);
+      if (d > 0 && v.m > 0) n = Math.min(n, Math.max(v.m, v.a));
+      v.a = n; refreshVit(); touch(); break;
+    }
+    case 'need': { const k = t.dataset.k, v = int(t.dataset.v); S[k] = S[k] === v ? v - 1 : v; renderNeed(); touch(); break; }
+    case 'horas': S.fome = Math.max(0, S.fome - 1); S.sede = Math.max(0, S.sede - 1); renderNeed(); touch(); toast('−1 em Fome e Sede (2 h dentro do universo).'); break;
+    case 'slot': { const i = int(t.dataset.i); S.inv[i] ? openViewer(i) : openPicker(i); break; }
+    case 'tab': pk.tab = t.dataset.v; renderPick(); break;
+    case 'rar': pk.rar = t.dataset.v; renderPick(); break;
+    case 'pick': S.inv[pk.slot] = t.dataset.id; $('#dlgPick').close(); renderInv(); touch(); break;
+    case 'trocar': $('#dlgCard').close(); openPicker(cv.i); break;
+    case 'remover': S.inv[cv.i] = ''; $('#dlgCard').close(); renderInv(); touch(); break;
+    case 'pa': { const r = int(t.dataset.r), v = int(t.dataset.v); S.pa[r] = S.pa[r] === v ? v - 1 : v; renderAdr(); touch(); break; }
+    case 'ch': { const i = int(t.dataset.i), v = int(t.dataset.v); S.choque.c[i] = v; if (!v) S.choque.r[i] = 0; renderAdr(); touch(); break; }
+    case 'd100': {
+      const i = int(t.dataset.i); let r;
+      do { r = Math.floor(Math.random() * 100) + 1; } while (r === 50);   // 50: rola de novo
+      S.choque.r[i] = r; S.choque.c[i] = r <= 49 ? 2 : 1; renderAdr(); touch();
+      toast(`d100 em ${BAR[i]}%: ${r}. ${r <= 49 ? 'Instabilidade' : 'Adrenalina'}.`); break;
+    }
+    case 'cena': S.choque = { c: [0, 0, 0], r: [0, 0, 0] }; renderAdr(); touch(); toast('Teste de Choque zerado para a nova cena.'); break;
+    case 'rit-add': { const r = normRitual({ circ: 1, custo: CUSTO[1] }); S.rituais.push(r); openRit.add(r.id); renderRit(); touch(); $(`details.rit[data-id="${r.id}"]`)?.scrollIntoView({ block: 'center' }); break; }
+    case 'rit-cat': openRitCatalog(); break;
+    case 'rit-pick': {
+      const id = t.dataset.id; if (S.rituais.some(r => r.pid === id)) break;
+      const r = expandRitual({ id: uid(), pid: id }); S.rituais.push(r); openRit.add(r.id);
+      $('#dlgRit').close(); renderRit(); touch(); $(`details.rit[data-id="${r.id}"]`)?.scrollIntoView({ block: 'center' }); break;
+    }
+    case 'rit-del': armed(t, 'Remover ritual', () => { S.rituais = S.rituais.filter(r => r.id !== t.dataset.id); openRit.delete(t.dataset.id); renderRit(); touch(); }); break;
+    case 'menu': $('#bk').value = JSON.stringify(pack(S)); updateSize(); fillSelect(); $('#dlgMenu').showModal(); break;
+    case 'close': $('#' + t.dataset.d).close(); break;
+    case 'bk-copy': {
+      const ta = $('#bk'); ta.select();
+      (navigator.clipboard?.writeText(ta.value) ?? Promise.reject()).then(() => toast('Copiado.'), () => { document.execCommand('copy'); toast('Copiado.'); }); break;
+    }
+    case 'bk-load':
+      try { S = normalize(JSON.parse($('#bk').value)); $('#dlgMenu').close(); renderAll(); touch(); toast('Ficha importada.'); }
+      catch { toast('Texto inválido. Cole aqui o JSON copiado de uma ficha.'); }
+      break;
+    case 'reset': armed(t, 'Limpar esta ficha', () => { S = blank(view.pid === ctx.pid ? ctx.pname : S.nome); openRit.clear(); $('#dlgMenu').close(); renderAll(); touch(); toast('Ficha limpa.'); }); break;
+  }
+});
+
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset.bind) { const [k, f] = t.dataset.bind.split('.'); S[k][f] = Math.max(0, int(t.value)); refreshVit(); touch(); }
+  else if (t.dataset.rit) {
+    const r = S.rituais.find(x => x.id === t.dataset.rit); if (!r) return;
+    setRitField(r, t.dataset.f, t.value); refreshRit(r); touch();
+  }
+  else if (t.dataset.top) { S[t.dataset.top] = t.value; touch(); }
+  else if (t.id === 'pkQ') { pk.q = t.value; renderPick(); }
+  else if (t.id === 'selFicha') { $('#dlgMenu').close(); switchView(t.value); }
+});
+document.addEventListener('focusin', e => { if (e.target.matches?.('input[type=number]')) e.target.select(); });
+document.addEventListener('focusout', e => {
+  const t = e.target;
+  if (t.dataset?.bind) { const [k, f] = t.dataset.bind.split('.'); t.value = S[k][f]; }
+  if (pendingRemote) setTimeout(() => {
+    if (pendingRemote && !saveTimer && !editingInside()) { S = normalize(pendingRemote.d); pendingRemote = null; renderAll(); }
+  }, 80);
+});
+document.addEventListener('toggle', e => {                       // lembra quais rituais estão abertos
+  const d = e.target; if (!d.matches?.('details.rit')) return;
+  d.open ? openRit.add(d.dataset.id) : openRit.delete(d.dataset.id);
+}, true);
+addEventListener('pagehide', () => { if (saveTimer) flush(); });
+
+/* ---------- tema (segue o Owlbear Rodeo) ---------- */
+const applyTheme = th => { document.documentElement.dataset.theme = th?.mode === 'LIGHT' ? 'light' : 'dark'; };
+
+/* ---------- inicialização ---------- */
+async function boot() {
+  try { OBR = (await import(SDK_URL)).default; } catch (e) { console.warn('SDK do Owlbear indisponível; abrindo em modo local.', e); OBR = null; }
+
+  if (OBR && OBR.isAvailable) {
+    ctx.local = false;
+    await new Promise(res => (OBR.isReady ? res() : OBR.onReady(res)));
+    ctx.pid = OBR.player.id || (OBR.player.getId ? await OBR.player.getId() : 'jogador');
+    ctx.pname = await OBR.player.getName();
+    ctx.role = await OBR.player.getRole();
+    try { applyTheme(await OBR.theme.getTheme()); OBR.theme.onChange(applyTheme); } catch { /* sem tema */ }
+    const md = await OBR.room.getMetadata();
+    lastMd = md || {}; sheets = collect(md);
+    view = { pid: ctx.pid };
+    const rec = sheets[ctx.pid], bk = readLocal(ctx.pid);
+    S = rec ? normalize(rec.d) : bk ? normalize(bk) : blank(ctx.pname);
+    ctx.ready = true;
+    if (!rec && bk) touch();                          // havia cópia local e a sala ainda não tinha: sobe para a sala
+    OBR.room.onMetadataChange(onRoomMeta);
+    try { OBR.player.onChange(p => { if (p.role !== ctx.role) { ctx.role = p.role; fillSelect(); } }); } catch { /* opcional */ }
+    setStatus('saved', rec ? 'Salva na sala' : 'Nova ficha');
+  } else {
+    const bk = readLocal('local');
+    S = bk ? normalize(bk) : blank('');
+    ctx.ready = true;
+    setStatus('local', 'Só neste navegador');
+  }
+  renderAll(); fillSelect();
+}
+boot();
+</script>
+</body>
+</html>
