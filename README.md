@@ -1,1 +1,0 @@
-# trono-de-seda
